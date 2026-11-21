@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account - MIRHA COLLECTION</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#0A0A0A;color:#fff}
+header{background:#000;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+.logo{font-weight:900;font-size:20px}.logo span{color:#C9A227}
+.btn{border:none;padding:10px 14px;border-radius:20px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-gold{background:linear-gradient(90deg,#C9A227,#0E7C7B);color:#fff}.btn-teal{background:#0E7C7B;color:#fff}.btn-grey{background:#222;color:#fff;border:1px solid #333}
+.card{background:#151515;border:1px solid #2a2a2a;border-radius:16px;padding:14px;margin:12px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:12px 14px}.tab{background:#1a1a1a;border:1px solid #333;color:#fff;padding:9px 14px;border-radius:20px;white-space:nowrap;cursor:pointer}.tab.active{background:#0E7C7B;border-color:#0E7C7B;font-weight:800}
+input,select,textarea{width:100%;background:#222;border:1px solid #333;color:#fff;padding:11px;border-radius:12px;margin:6px 0}
+.order{background:#222;padding:12px;border-radius:12px;margin:8px 0}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:800}.b-pending{background:#C9A227;color:#000}.b-confirm{background:#1A3A8F}.b-delivered{background:#25D366;color:#000}.b-cancelled{background:#FF3B3B;color:#fff}
+footer{background:#000;padding:20px;text-align:center;color:#777;font-size:13px}footer a{color:#777;text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+<a href="/" style="color:#fff;text-decoration:none"><div class="logo">MIRHA <span>COLLECTION</span></div></a>
+<div><a class="btn btn-grey" href="/">← Back to Store</a> <button id="logoutHeaderBtn" class="btn btn-gold hidden" onclick="logout()">Logout</button></div>
+</header>
+
+<div id="loginBox" class="card" style="max-width:420px;margin:20px auto">
+<h2>👤 My Account Login</h2>
+<p style="color:#aaa;font-size:13px">Phone se SMS OTP se login karo</p>
+<input id="phoneInput" placeholder="Phone 03xxxxxxxxx" maxlength="15" type="tel">
+<button class="btn btn-teal" style="width:100%;margin-top:8px" onclick="sendOTP()">OTP Bhejo</button>
+<input id="otpInput" placeholder="OTP 6 digit - SMS se mila hua OTP" maxlength="6" inputmode="numeric">
+<button class="btn btn-gold" style="width:100%" onclick="verifyOTP()">✅ Verify & Login</button>
+<p id="loginMsg" style="color:#C9A227;font-weight:700"></p>
+<hr style="border-color:#2a2a2a;margin:14px 0">
+<h3>📦 Guest Order Tracking</h3>
+<input id="guestTrackId" placeholder="MIRHA-XXXXXX">
+<button class="btn btn-grey" style="width:100%" onclick="trackOrder('guestTrackId','guestTrackResult')">Track Karo</button>
+<div id="guestTrackResult" style="margin-top:10px"></div>
+</div>
+
+<div id="panel" style="display:none">
+<div class="card">
+<div style="display:flex;gap:12px;align-items:center">
+<div style="width:60px;height:60px;border-radius:50%;background:#0E7C7B;display:flex;align-items:center;justify-content:center;font-size:28px">👤</div>
+<div><b id="profName">Customer</b><br><span id="profPhone" style="color:#aaa"></span><br><span id="profAddr" style="color:#aaa"></span></div>
+</div>
+</div>
+
+<div class="tabs">
+<button class="tab active" onclick="showTab('orders',this)">My Orders</button>
+<button class="tab" onclick="showTab('track',this)">Track Order</button>
+<button class="tab" onclick="showTab('wish',this)">My Wishlist</button>
+<button class="tab" onclick="showTab('profile',this)">My Profile</button>
+<button class="tab" onclick="showTab('address',this)">My Addresses</button>
+<button class="tab" onclick="showTab('devices',this)">My Devices</button>
+</div>
+
+<div id="tab-orders" class="card"><h3>My Orders</h3><div id="ordersList">Loading...</div><a href="/" class="btn btn-gold">🛍️ Shop Now</a></div>
+<div id="tab-track" class="card" style="display:none"><h3>📦 Track Order</h3><input id="trackId" placeholder="MIRHA-XXXXXX"><button class="btn btn-teal" style="width:100%" onclick="trackOrder('trackId','trackResult')">Track Karo</button><div id="trackResult" style="margin-top:10px"></div></div>
+<div id="tab-wish" class="card" style="display:none"><h3>❤️ My Wishlist (<span id="wishCount">0</span>)</h3><div id="wishList">Loading...</div></div>
+<div id="tab-profile" class="card" style="display:none"><h3>My Profile</h3><input id="pName" placeholder="Naam" maxlength="40"><input id="pPhone" placeholder="Phone" maxlength="15" readonly><textarea id="pAddr" placeholder="Address" maxlength="120"></textarea><button class="btn btn-gold" style="width:100%" onclick="saveProfile()">✅ Save Profile</button><p id="profileMsg" style="color:#25D366"></p><p style="font-size:12px;color:#aaa">Local browser storage only (cross-device sync nahi hai)</p></div>
+<div id="tab-address" class="card" style="display:none"><h3>My Addresses</h3><div id="addrList"></div><input id="addrLabel" placeholder="Label - Ghar / Office" maxlength="20"><textarea id="addrText" placeholder="Full Address (min 10 chars)" maxlength="120"></textarea><button class="btn btn-teal" style="width:100%" onclick="saveAddress()">+ Add Address</button></div>
+<div id="tab-devices" class="card" style="display:none"><h3>📱 My Devices</h3><div id="devicesList"></div><button class="btn btn-gold" style="width:100%;background:#FF3B3B" onclick="logoutAllDevices()">Sab Devices Se Logout</button></div>
+</div>
+
+<footer><div>MIRHA COLLECTION - Risalpur</div><br><a href="/team-secure">Team Login</a></footer>
+
+<script src="supabase-config.js"></script>
+<script src="shared.js"></script>
+<script>
+let supabaseClient = null, currentPhone = '', myWish = sharedSafeJSON('mirhaWish', []), myAddrs = sharedSafeJSON('mirhaAddrs', []), allProds = [];
+let idleTimer = null, lastActive = Date.now();
+
+function supabaseInit() { try { supabaseClient = sharedSupabase(); } catch (e) { console.warn(e.message); } }
+
+async function checkSession() {
+  if (!supabaseClient) { document.getElementById('loginMsg').textContent = 'Supabase configuration required.'; return; }
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) { document.getElementById('loginMsg').textContent = error.message; return; }
+  if (data.session) {
+    currentPhone = sharedNormalizePhone(data.session.user.phone || '');
+    showPanel();
+  } else {
+    document.getElementById('loginBox').style.display = 'block';
+    document.getElementById('panel').style.display = 'none';
+    document.getElementById('logoutHeaderBtn').classList.add('hidden');
+  }
+}
+
+function showPanel() {
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+  document.getElementById('logoutHeaderBtn').classList.remove('hidden');
+  document.getElementById('profPhone').textContent = currentPhone;
+  const p = sharedSafeJSON('mirhaProfile', {});
+  if (p.name) document.getElementById('profName').textContent = p.name;
+  if (p.address) document.getElementById('profAddr').textContent = p.address;
+
+  loadMyOrders(); loadWishlist(); loadProfile(); loadAddresses(); loadMyDevices();
+
+  lastActive = Date.now();
+  if (!idleTimer) {
+    ['click', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+      document.addEventListener(evt, () => { lastActive = Date.now(); }, { passive: true })
+    );
+    idleTimer = setInterval(() => {
+      if (Date.now() - lastActive > 2 * 60 * 60 * 1000) {
+        alert('Tum 2 Ghante Se Inactive The, Dobara Login Karo');
+        logout();
+      }
+    }, 60000);
+  }
+}
+
+async function sendOTP() {
+  try {
+    const ph = sharedNormalizePhone(document.getElementById('phoneInput').value);
+    if (!sharedIsValidPhone(ph)) throw new Error('Phone sahi likho - 03xxxxxxxxx');
+    if (!supabaseClient) throw new Error('Supabase configuration missing');
+    currentPhone = ph;
+    const { error } = await supabaseClient.auth.signInWithOtp({ phone: sharedToE164(ph), options: { channel: 'sms' } });
+    if (error) throw error;
+    document.getElementById('loginMsg').textContent = 'OTP SMS par bhej diya gaya.';
+  } catch (e) { alert(e.message || 'OTP send nahi ho saka'); }
+}
+
+async function verifyOTP() {
+  try {
+    const ph = sharedNormalizePhone(document.getElementById('phoneInput').value || currentPhone);
+    if (!sharedIsValidPhone(ph)) throw new Error('Phone sahi likho - 03xxxxxxxxx');
+    const otp = document.getElementById('otpInput').value.trim();
+    if (!/^\d{6}$/.test(otp)) throw new Error('6 digit OTP likhein');
+    currentPhone = ph;
+    const { data, error } = await supabaseClient.auth.verifyOtp({ phone: sharedToE164(ph), token: otp, type: 'sms' });
+    if (error) throw error;
+    if (!data.session) throw new Error('OTP verification failed');
+    showPanel();
+  } catch (e) { alert(e.message || 'OTP verify nahi hua'); }
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  ['orders', 'track', 'wish', 'profile', 'address', 'devices'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = (t === name ? 'block' : 'none');
+  });
+}
+
+function badgeClass(status) {
+  if (status === 'Delivered') return 'b-delivered';
+  if (status === 'Confirm' || status === 'Shipped') return 'b-confirm';
+  if (status === 'Cancelled') return 'b-cancelled';
+  return 'b-pending';
+}
+
+async function loadMyOrders() {
+  if (!supabaseClient) { document.getElementById('ordersList').textContent = 'Supabase configuration missing'; return; }
+  const { data, error } = await supabaseClient.rpc('get_my_orders');
+  if (error) { document.getElementById('ordersList').textContent = 'Orders load nahi ho sake: ' + error.message; return; }
+  if (!data?.length) {
+    document.getElementById('ordersList').innerHTML = '<p>Abhi koi order nahi hai - <a href="/" style="color:#C9A227">Shop Now</a></p>';
+    return;
+  }
+  document.getElementById('ordersList').innerHTML = data.map(o =>
+    `<div class="order"><b>${sharedEsc(o.order_code)}</b> <span class="badge ${badgeClass(o.status)}">${sharedEsc(o.status)}</span><br>Total: ${sharedFormatPrice(o.total)} | Pay: ${sharedEsc(o.pay)}<br>Items: ${sharedEsc(o.items_names || '—')}<br><small>${new Date(o.created_at).toLocaleString()}</small></div>`
+  ).join('');
+}
+
+async function trackOrder(inputId = 'trackId', outId = 'trackResult') {
+  if (!supabaseClient) { alert('Supabase configuration missing'); return; }
+  const code = document.getElementById(inputId).value.trim().toUpperCase();
+  if (!code) { alert('Order ID likho'); return; }
+  const { data, error } = await supabaseClient.rpc('track_order', { p_code: code });
+  if (error || !data?.length) {
+    document.getElementById(outId).innerHTML = '<p style="color:#FF3B3B">Order nahi mila. ID check karein.</p>';
+    return;
+  }
+  const o = data[0];
+  document.getElementById(outId).innerHTML = `<div class="order"><b>${sharedEsc(o.order_code)}</b> <span class="badge ${badgeClass(o.status)}">${sharedEsc(o.status)}</span><br>Total: ${sharedFormatPrice(o.total)}<br>Items: ${sharedEsc(o.items_names || '—')}<br><small>${new Date(o.created_at).toLocaleString()}</small></div>`;
+}
+
+async function loadWishlist() {
+  document.getElementById('wishCount').textContent = myWish.length;
+  if (!myWish.length) { document.getElementById('wishList').innerHTML = '<p>Wishlist khali hai - <a href="/" style="color:#C9A227">Shop Now</a></p>'; return; }
+  if (supabaseClient && !allProds.length) {
+    const { data } = await supabaseClient.from('products').select('id,name,price,img,stock').eq('is_active', true);
+    if (data) allProds = data;
+  }
+  document.getElementById('wishList').innerHTML = myWish.map(id => {
+    const p = allProds.find(x => String(x.id) === String(id));
+    if (!p) return `<div class="order">Product ID: ${sharedEsc(id)} <button class="btn btn-grey" data-id="${sharedEsc(id)}" onclick="removeWish(this.dataset.id)">Remove</button></div>`;
+    return `<div class="order" style="display:flex;gap:10px;align-items:center">
+      <img src="${sharedEsc(p.img)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">
+      <div style="flex:1"><b>${sharedEsc(p.name)}</b><br>${sharedFormatPrice(p.price)}</div>
+      <button class="btn btn-gold" data-id="${sharedEsc(p.id)}" onclick="addWishToCart(this.dataset.id)">Add to Cart</button>
+      <button class="btn btn-grey" data-id="${sharedEsc(p.id)}" onclick="removeWish(this.dataset.id)">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function addWishToCart(id) {
+  const c = sharedSafeJSON('mirhaCart', []);
+  const ex = c.find(x => String(x.id) === String(id));
+  if (ex) ex.qty = Math.min(10, ex.qty + 1); else c.push({ id: String(id), qty: 1 });
+  localStorage.setItem('mirhaCart', JSON.stringify(c));
+  sharedToast('✅ Cart me add ho gaya');
+}
+
+function removeWish(id) {
+  myWish = myWish.filter(x => String(x) !== String(id));
+  localStorage.setItem('mirhaWish', JSON.stringify(myWish));
+  loadWishlist();
+}
+
+function loadProfile() {
+  const p = sharedSafeJSON('mirhaProfile', {});
+  document.getElementById('pName').value = p.name || '';
+  document.getElementById('pPhone').value = currentPhone;
+  document.getElementById('pAddr').value = p.address || '';
+}
+
+function saveProfile() {
+  const n = sharedClean(document.getElementById('pName').value, 40);
+  const a = sharedClean(document.getElementById('pAddr').value, 120);
+  localStorage.setItem('mirhaProfile', JSON.stringify({ name: n, address: a, phone: currentPhone }));
+  document.getElementById('profileMsg').textContent = '✅ Profile Save Ho Gaya! Checkout me auto fill hoga.';
+  document.getElementById('profName').textContent = n || 'Customer';
+  document.getElementById('profAddr').textContent = a || '';
+}
+
+function loadAddresses() {
+  if (!myAddrs.length) { document.getElementById('addrList').innerHTML = '<p>Koi address nahi</p>'; return; }
+  document.getElementById('addrList').innerHTML = myAddrs.map((a, i) => `<div class="order"><b>${sharedEsc(a.label)}</b> - ${sharedEsc(a.text)} <button onclick="deleteAddress(${i})">🗑️</button></div>`).join('');
+}
+
+function saveAddress() {
+  const l = sharedClean(document.getElementById('addrLabel').value, 20) || 'Ghar';
+  const t = sharedClean(document.getElementById('addrText').value, 120);
+  if (t.length < 10) { alert('Address kam az kam 10 characters likho'); return; }
+  myAddrs.push({ label: l, text: t });
+  localStorage.setItem('mirhaAddrs', JSON.stringify(myAddrs));
+  document.getElementById('addrLabel').value = '';
+  document.getElementById('addrText').value = '';
+  loadAddresses();
+  sharedToast('Address Save Ho Gaya');
+}
+
+function deleteAddress(i) { myAddrs.splice(i, 1); localStorage.setItem('mirhaAddrs', JSON.stringify(myAddrs)); loadAddresses(); }
+
+function loadMyDevices() {
+  document.getElementById('devicesList').innerHTML = `<div class="order">📱 This Device - ${sharedEsc(navigator.userAgent.slice(0, 45))}<br>Last Active: Abhi<br><button class="btn btn-grey" onclick="logout()">Logout Is Device</button></div>`;
+}
+
+async function logout() { if (supabaseClient) await supabaseClient.auth.signOut({ scope: 'local' }); window.location.href = '/'; }
+
+async function logoutAllDevices() {
+  if (supabaseClient) await supabaseClient.auth.signOut({ scope: 'global' });
+  alert('Sab devices ke refresh sessions revoke kar diye gaye hain.');
+  window.location.href = '/';
+}
+
+supabaseInit();
+checkSession();
+</script>
+</body>
+</html>
