@@ -1,0 +1,25 @@
+/* MIRHA COLLECTION - Shared CSS - Theme Black + Gold + Teal */
+:root {
+  --black: #0A0A0A;
+  --header: #000000;
+  --card: #151515;
+  --input: #222222;
+  --gold: #C9A227;
+  --teal: #0E7C7B;
+  --emerald: #0A5C36;
+  --blue: #1A3A8F;
+  --white: #FFFFFF;
+  --grey: #888888;
+  --wa: #25D366;
+  --red: #FF3B3B;
+}
+body { background: var(--black); color: var(--white); }
+.card img { filter: none !important; opacity: 1 !important; }
+a { color: var(--gold); }
+button { cursor: pointer; }
+.hidden { display: none !important; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+```
+
+---
