@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>MIRHA COLLECTION | Team</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#0A0A0A;color:#fff}
+header{padding:14px;background:#000;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900}.logo span{color:#C9A227}
+.card{background:#151515;border:1px solid #333;border-radius:16px;padding:16px;margin:14px}
+input,select{width:100%;padding:11px;border-radius:10px;background:#222;color:#fff;border:1px solid #444;margin:6px 0}
+.btn{border:0;border-radius:18px;padding:10px 16px;font-weight:800;cursor:pointer}
+.gold{background:#C9A227;color:#000}.teal{background:#0E7C7B;color:#fff}.grey{background:#333;color:#fff}.red{background:#FF3B3B;color:#fff}
+.tabs{display:flex;gap:8px;overflow:auto;padding:12px}
+.tab{background:#222;color:#fff;border:1px solid #444;border-radius:18px;padding:9px 14px;white-space:nowrap}
+.tab.active{background:#0E7C7B;border-color:#0E7C7B}
+.item{padding:12px;margin:8px 0;background:#222;border-radius:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+small{color:#aaa}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<header>
+  <div class="logo">MIRHA <span>COLLECTION TEAM</span></div>
+  <div><a href="/">Store</a> <button id="logout" class="btn grey hidden">Logout</button></div>
+</header>
+
+<section id="login" class="card" style="max-width:430px;margin:30px auto">
+  <h2>Team Login</h2>
+  <p><small>Use the staff username and password created by the project owner.</small></p>
+  <input id="username" autocomplete="username" placeholder="Username">
+  <input id="password" type="password" autocomplete="current-password" placeholder="Password">
+  <button id="loginBtn" class="btn gold" style="width:100%">Login</button>
+  <p id="loginMsg" style="color:#FF3B3B"></p>
+</section>
+
+<main id="app" class="hidden">
+  <div class="card">Welcome, <b id="who"></b> · Role: <b id="role"></b></div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="orders">Orders</button>
+    <button class="tab" data-tab="products">Products</button>
+    <button id="suppliersTabBtn" class="tab hidden" data-tab="suppliers">Suppliers (Admin)</button>
+  </nav>
+
+  <section id="orders" class="card">
+    <h3>Orders</h3>
+    <div id="ordersList">Loading…</div>
+  </section>
+
+  <section id="products" class="card hidden">
+    <h3>Products</h3>
+    <div id="productEditor" class="item hidden">
+      <h4>+ Add Product</h4>
+      <div class="grid2">
+        <input id="npName" placeholder="Product Name *" maxlength="80">
+        <select id="npCat"></select>
+        <input id="npPrice" type="number" min="1" placeholder="Price (Rs.) *">
+        <input id="npOldPrice" type="number" min="1" placeholder="Old Price (optional)">
+        <input id="npStock" type="number" min="0" value="10" placeholder="Stock *">
+        <select id="npTag"><option value="">No Tag</option></select>
+      </div>
+      <input id="npImg" placeholder="Image URL (https://...)">
+      <button class="btn gold" onclick="createProduct()">Save Product</button>
+    </div>
+    <div id="productsList">Loading…</div>
+  </section>
+
+  <section id="suppliers" class="card hidden">
+    <h3>Suppliers (Admin Only)</h3>
+    <div class="item">
+      <h4>+ Add Supplier</h4>
+      <div class="grid2">
+        <input id="nsName" placeholder="Supplier Name *" maxlength="80">
+        <input id="nsPhone" placeholder="Phone 03xxxxxxxxx *" maxlength="11">
+        <input id="nsProduct" placeholder="Product Supplied" maxlength="120">
+        <input id="nsCost" type="number" min="0" placeholder="Cost (Rs.)">
+        <input id="nsBank" placeholder="Bank Name" maxlength="60">
+        <input id="nsLast4" placeholder="Bank Last 4 Digits" maxlength="4">
+      </div>
+      <select id="nsStatus"><option>Active</option><option>Pending Payment</option><option>Inactive</option></select>
+      <button class="btn gold" onclick="createSupplier()">Save Supplier</button>
+    </div>
+    <div id="supplierList"></div>
+  </section>
+</main>
+
+<script src="supabase-config.js"></script>
+<script src="shared.js"></script>
+<script>
+let sb = null, currentRole = '';
+try { sb = sharedSupabase(); } catch (e) { document.getElementById('loginMsg').textContent = e.message; }
+const $ = id => document.getElementById(id);
+const STATUS_OPTS = ['Pending', 'Confirm', 'Shipped', 'Delivered', 'Cancelled'];
+
+function showApp(user, role) {
+  currentRole = role;
+  $('login').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  $('logout').classList.remove('hidden');
+  $('who').textContent = user;
+  $('role').textContent = role;
+  if (role === 'admin') $('suppliersTabBtn').classList.remove('hidden');
+  if (['admin', 'manager'].includes(role)) $('productEditor').classList.remove('hidden');
+  loadOrders();
+  loadProducts();
+}
+
+async function sessionCheck() {
+  if (!sb) return;
+  const { data } = await sb.auth.getSession();
+  if (data.session) {
+    const { data: p } = await sb.from('profiles').select('username,role').eq('id', data.session.user.id).maybeSingle();
+    if (p) showApp(p.username, p.role);
+  }
+}
+
+$('loginBtn').onclick = async () => {
+  try {
+    if (!sb) throw Error('Supabase config missing');
+    const u = $('username').value.trim().toLowerCase(), p = $('password').value;
+    if (!/^[a-z0-9_]{3,20}$/.test(u) || !p) throw Error('Username/password invalid');
+    const { data, error } = await sb.auth.signInWithPassword({ email: u + '@mirha.local', password: p });
+    if (error) throw error;
+    const { data: profile, error: pe } = await sb.from('profiles').select('username,role').eq('id', data.user.id).single();
+    if (pe) throw pe;
+    if (!profile || !['admin', 'manager', 'supervisor', 'frontdesk'].includes(profile.role)) throw Error('Staff profile missing or role invalid');
+    showApp(profile.username, profile.role);
+  } catch (e) { $('loginMsg').textContent = e.message || 'Login failed'; }
+};
+
+$('logout').onclick = async () => { if (sb) await sb.auth.signOut({ scope: 'local' }); location.reload(); };
+
+async function loadOrders() {
+  const { data, error } = await sb
+    .from('orders')
+    .select('order_code,customer,phone,address,pay,tid,delivery_fee,total,status,created_at,order_items(product_name,qty,price_at_order)')
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if (error) { $('ordersList').textContent = error.message; return; }
+  $('ordersList').innerHTML = (data || []).map(o => {
+    const itemsStr = (o.order_items || []).map(i => `${sharedEsc(i.product_name)} x${i.qty} (${sharedFormatPrice(i.price_at_order)})`).join(', ');
+    const opts = STATUS_OPTS.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('');
+    return `<div class="item">
+      <b>${sharedEsc(o.order_code)}</b> · ${sharedEsc(o.customer)} · <b>${sharedFormatPrice(o.total)}</b> (Delivery: ${sharedFormatPrice(o.delivery_fee)}) · Status: <b>${sharedEsc(o.status)}</b><br>
+      <small>📞 ${sharedEsc(o.phone)} · 📍 ${sharedEsc(o.address)}</small><br>
+      <small>💳 ${sharedEsc(o.pay)}${o.tid ? ' · TID: <b>' + sharedEsc(o.tid) + '</b>' : ''} · ${new Date(o.created_at).toLocaleString()}</small><br>
+      <small>🛍️ ${itemsStr || '—'}</small><br>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <select id="st-${sharedEsc(o.order_code)}" style="flex:1;margin:0">${opts}</select>
+        <button class="btn gold" data-code="${sharedEsc(o.order_code)}" onclick="setStatus(this.dataset.code)">Update</button>
+      </div>
+    </div>`;
+  }).join('') || 'No orders';
+}
+
+window.setStatus = async code => {
+  const status = $('st-' + code).value;
+  const { error } = await sb.from('orders').update({ status }).eq('order_code', code);
+  if (error) alert(error.message); else { sharedToast('Status updated'); loadOrders(); }
+};
+
+async function loadProducts() {
+  const [{ data, error }, { data: cats }, { data: tags }] = await Promise.all([
+    sb.from('products').select('id,name,cat,tag,price,old_price,stock,is_active').order('created_at', { ascending: false }).limit(200),
+    sb.from('categories').select('id,name').order('sort_order'),
+    sb.from('tags').select('id,name')
+  ]);
+  if (cats) $('npCat').innerHTML = cats.map(c => `<option value="${c.id}">${sharedEsc(c.name)}</option>`).join('');
+  if (tags) $('npTag').innerHTML = `<option value="">No Tag</option>` + tags.map(t => `<option value="${t.id}">${sharedEsc(t.name)}</option>`).join('');
+
+  const canEdit = ['admin', 'manager'].includes(currentRole);
+  $('productsList').innerHTML = error ? sharedEsc(error.message) : (data || []).map(p =>
+    `<div class="item">
+      <b>${sharedEsc(p.name)}</b> (${sharedEsc(p.cat)}${p.tag ? ' · ' + sharedEsc(p.tag) : ''}) · ${p.is_active ? '✅ Active' : '⛔ Hidden'}<br>
+      <small>Price: ${sharedFormatPrice(p.price)} · Stock: ${p.stock}</small>
+      ${canEdit ? `<div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+        <input id="pp-${p.id}" type="number" min="1" value="${p.price}" style="width:110px;margin:0" title="Price">
+        <input id="ps-${p.id}" type="number" min="0" value="${p.stock}" style="width:90px;margin:0" title="Stock">
+        <button class="btn teal" onclick="saveProduct(${p.id})">Save</button>
+        <button class="btn grey" onclick="toggleProduct(${p.id},${!p.is_active})">${p.is_active ? 'Hide' : 'Activate'}</button>
+      </div>` : ''}
+    </div>`
+  ).join('') || 'No products';
+}
+
+window.createProduct = async () => {
+  const name = $('npName').value.trim();
+  const category_id = Number($('npCat').value);
+  const price = Number($('npPrice').value);
+  const old_price = $('npOldPrice').value ? Number($('npOldPrice').value) : null;
+  const stock = Number($('npStock').value || 0);
+  const tag_id = $('npTag').value ? Number($('npTag').value) : null;
+  const img = $('npImg').value.trim() || null;
+  if (name.length < 3 || !category_id || !Number.isInteger(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
+    alert('Name (3+ chars), category, valid price aur stock required hain');
+    return;
+  }
+  const { error } = await sb.from('products').insert({ name, category_id, cat: 'Temp', price, old_price, stock, tag_id, img, is_active: true });
+  if (error) alert(error.message);
+  else { sharedToast('Product added'); $('npName').value = ''; $('npPrice').value = ''; $('npOldPrice').value = ''; $('npImg').value = ''; loadProducts(); }
+};
+
+window.saveProduct = async id => {
+  const price = Number($('pp-' + id).value);
+  const stock = Number($('ps-' + id).value);
+  if (!Number.isInteger(price) || price <= 0 || !Number.isInteger(stock) || stock < 0) {
+    alert('Price > 0 aur Stock >= 0 hona chahiye');
+    return;
+  }
+  const { error } = await sb.from('products').update({ price, stock }).eq('id', id);
+  if (error) alert(error.message); else { sharedToast('Product updated'); loadProducts(); }
+};
+
+window.toggleProduct = async (id, is_active) => {
+  const { error } = await sb.from('products').update({ is_active }).eq('id', id);
+  if (error) alert(error.message); else loadProducts();
+};
+
+async function invokeSuppliers(method, body = null) {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) throw Error('Session expired. Login again.');
+  const { data, error } = await sb.functions.invoke('admin-suppliers', {
+    method, headers: { Authorization: 'Bearer ' + session.access_token }, body: body || undefined
+  });
+  if (error) {
+    let msg = error.message;
+    try { const j = await error.context?.json?.(); if (j?.error) msg = j.error; } catch {}
+    throw Error(msg);
+  }
+  return data;
+}
+
+async function loadSuppliers() {
+  try {
+    const data = await invokeSuppliers('GET');
+    $('supplierList').innerHTML = (data.suppliers || []).map(s =>
+      `<div class="item">
+        <b>${sharedEsc(s.name)}</b> · ${sharedEsc(s.phone)} · <small>${sharedEsc(s.status)}</small><br>
+        Product: ${sharedEsc(s.product || '—')} · Cost: ${s.cost != null ? sharedFormatPrice(s.cost) : '—'} · Bank: ${sharedEsc(s.bank_name || '—')} ${s.bank_last4 ? '****' + sharedEsc(s.bank_last4) : ''}<br>
+        <button class="btn red" style="margin-top:6px" onclick="deleteSupplier(${s.id})">Delete</button>
+      </div>`
+    ).join('') || 'No suppliers';
+  } catch (e) { $('supplierList').innerHTML = `<p style="color:#FF3B3B">${sharedEsc(e.message)}</p>`; }
+}
+
+window.createSupplier = async () => {
+  try {
+    await invokeSuppliers('POST', {
+      action: 'create', name: $('nsName').value.trim(), phone: $('nsPhone').value.trim(),
+      product: $('nsProduct').value.trim(), cost: $('nsCost').value === '' ? null : Number($('nsCost').value),
+      bank_name: $('nsBank').value.trim(), bank_last4: $('nsLast4').value.trim(), status: $('nsStatus').value
+    });
+    sharedToast('Supplier saved');
+    ['nsName', 'nsPhone', 'nsProduct', 'nsCost', 'nsBank', 'nsLast4'].forEach(id => $(id).value = '');
+    loadSuppliers();
+  } catch (e) { alert(e.message); }
+};
+
+window.deleteSupplier = async id => {
+  if (!confirm('Supplier delete karein?')) return;
+  try { await invokeSuppliers('POST', { action: 'delete', id }); sharedToast('Supplier deleted'); loadSuppliers(); }
+  catch (e) { alert(e.message); }
+};
+
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  ['orders', 'products', 'suppliers'].forEach(id => $(id).classList.toggle('hidden', id !== b.dataset.tab));
+  if (b.dataset.tab === 'suppliers' && currentRole === 'admin') loadSuppliers();
+});
+
+sessionCheck();
+</script>
+</body>
+</html>
