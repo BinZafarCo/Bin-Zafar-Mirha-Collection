@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="seoTitle">MIRHA COLLECTION - Risalpur</title>
+<meta id="seoDesc" name="description" content="MIRHA COLLECTION - Ladies, Gents, Kids Suits - Risalpur, Nowshera, KPK - COD Available">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#0A0A0A;color:#fff}
+.topbar{background:linear-gradient(90deg,#0A5C36,#0E7C7B,#C9A227);text-align:center;padding:8px 12px;font-size:13px;font-weight:700}
+.announce{display:none;text-align:center;padding:6px 12px;font-size:12px;font-weight:800;color:#000;background:#C9A227}
+header{background:#000;padding:12px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;border-bottom:1px solid #1f1f1f;flex-wrap:wrap}
+.logo{font-weight:900;font-size:21px;letter-spacing:1px;white-space:nowrap}.logo span{color:#C9A227}
+.search{flex:1;min-width:140px;background:#222;border:1px solid #333;border-radius:20px;padding:9px 14px;color:#fff;outline:none}
+.search:focus{border-color:#C9A227}
+.iconBtn{background:#222;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:20px;text-decoration:none;font-size:13px;white-space:nowrap}
+.hero{background:linear-gradient(135deg,#000,#0A5C36 55%,#0E7C7B);padding:28px 16px;border-radius:0 0 20px 20px}
+.hero h1{font-size:28px;line-height:1.2;margin:0 0 8px}.hero p{color:#ddd;margin:0 0 16px}
+.heroBtns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:none;padding:11px 16px;border-radius:20px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn-gold{background:linear-gradient(90deg,#C9A227,#0E7C7B);color:#fff}.btn-teal{background:#0E7C7B;color:#fff}.btn-white{background:#fff;color:#111}.btn-grey{background:#222;color:#fff;border:1px solid #333}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.pills{display:flex;gap:8px;overflow:auto;padding:12px 14px}.pill{background:#1a1a1a;border:1px solid #333;color:#fff;padding:8px 14px;border-radius:20px;white-space:nowrap;cursor:pointer}.pill.active{background:#C9A227;color:#000;border-color:#C9A227;font-weight:800}
+.toolbar{display:flex;gap:8px;padding:0 14px}.toolbar select{background:#222;color:#fff;border:1px solid #333;padding:9px;border-radius:12px;flex:1}
+.count{padding:10px 14px;color:#aaa;font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 14px 30px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{background:#151515;border:1px solid #2a2a2a;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card img{width:100%;height:210px;object-fit:cover;filter:none!important;opacity:1!important;display:block;background:#222}
+.card-body{padding:10px;display:flex;flex-direction:column;flex:1}.badge{display:inline-block;font-size:11px;padding:4px 8px;border-radius:20px;font-weight:800}.badge-best{background:#0E7C7B}.badge-new{background:#C9A227;color:#000}
+.price{color:#C9A227;font-weight:900;font-size:16px}.old{color:#888;text-decoration:line-through;font-size:13px;margin-left:4px}
+.drawer{position:fixed;right:0;top:0;width:360px;max-width:94%;height:100%;background:#111;border-left:1px solid #333;z-index:100;transform:translateX(100%);transition:transform .25s ease;overflow:auto;padding:16px}.drawer.open{transform:none}
+.closeX{float:right;background:#222;color:#fff;border:1px solid #444;border-radius:50%;width:30px;height:30px;font-weight:800}
+input,select,textarea{width:100%;background:#222;border:1px solid #333;color:#fff;padding:11px;border-radius:12px;margin:6px 0}
+.fab{position:fixed;bottom:20px;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;text-decoration:none;z-index:90;box-shadow:0 4px 16px rgba(0,0,0,.5)}.fab-wa{right:16px;background:#25D366}.fab-ai{left:16px;background:#0E7C7B;border:2px solid #C9A227;cursor:pointer}
+.aiBox{position:fixed;left:16px;bottom:90px;width:320px;max-width:90%;background:#151515;border:1px solid #C9A227;border-radius:16px;z-index:95;display:none;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.6)}.aiBox.open{display:block}.aiHead{background:linear-gradient(90deg,#C9A227,#0E7C7B);padding:12px;font-weight:800;color:#000}.aiMsgs{height:260px;overflow:auto;padding:10px}.msg{background:#222;padding:8px 10px;border-radius:12px;margin:6px 0;font-size:14px;line-height:1.4}
+footer{background:#000;padding:24px 14px 90px;text-align:center;color:#aaa;font-size:13px;border-top:1px solid #1f1f1f}
+footer a{color:#777;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">Loading...</div>
+<div class="announce" id="announcementBar"></div>
+
+<header>
+  <a href="/" style="text-decoration:none;color:#fff"><div class="logo">MIRHA <span>COLLECTION</span></div></a>
+  <input class="search" id="searchBox" placeholder="Search suit..." maxlength="50" oninput="render()">
+  <a class="iconBtn" href="customer.html">👤 My Account</a>
+  <button class="iconBtn" type="button" onclick="toggleCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<section class="hero">
+  <h1 id="heroTitle">Loading...</h1>
+  <p id="heroSub">Premium Suits - Risalpur</p>
+  <div class="heroBtns">
+    <button class="btn btn-gold" type="button" onclick="render('All')">Shop Now</button>
+    <button class="btn btn-teal" type="button" onclick="filterTag('Best Selling')">Best Selling</button>
+    <button class="btn btn-white" type="button" onclick="filterTag('New')">New Arrival</button>
+  </div>
+</section>
+
+<div class="pills" id="catBar"><button class="pill active" type="button">Loading...</button></div>
+
+<div class="toolbar">
+  <select id="sortSel" onchange="render()">
+    <option value="new">Newest</option>
+    <option value="low">Price Low to High</option>
+    <option value="high">Price High to Low</option>
+    <option value="best">Best Selling</option>
+  </select>
+  <select id="tagSel" onchange="render()">
+    <option value="">All Tags</option>
+  </select>
+</div>
+
+<div class="count" id="countLine">Loading...</div>
+<div class="grid" id="grid"><p style="padding:20px">Loading products...</p></div>
+
+<aside class="drawer" id="cartDrawer" aria-label="Shopping Cart">
+  <h3>🛒 Your Cart <button class="closeX" type="button" onclick="toggleCart()">✕</button></h3>
+  <div id="cartItems"></div>
+  <div id="cartTotal" style="font-weight:900;margin:10px 0;line-height:1.5"></div>
+  <hr style="border-color:#262626">
+  <h4>Checkout</h4>
+  <select id="savedAddrSel" style="display:none" onchange="applySavedAddress()"></select>
+  <input id="cName" placeholder="Naam (min 3 chars) *" maxlength="40" autocomplete="name">
+  <input id="cPhone" placeholder="Phone 03xxxxxxxxx *" maxlength="15" type="tel" autocomplete="tel" oninput="syncOtpVisibility()">
+  <textarea id="cAddr" placeholder="Full Address (House/Street, Mohalla, City - min 10 chars) *" maxlength="120" rows="3"></textarea>
+  <select id="paySel" onchange="payChange()"></select>
+  <input id="tidInput" placeholder="TID / Transaction ID (6-30 chars) *" style="display:none" maxlength="30">
+  <div id="otpRow">
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="otpInput" placeholder="OTP 6 digit" maxlength="6" inputmode="numeric" style="flex:1">
+      <button class="btn btn-teal" type="button" onclick="sendOTP()">OTP Bhejo</button>
+    </div>
+  </div>
+  <p id="verifiedBadge" style="display:none;font-size:12px;color:#25D366;font-weight:700;margin:4px 0"></p>
+  <p style="font-size:12px;color:#C9A227">🔒 Ham kabhi Card / PIN / OTP call pe nahi mangte. Sirf site pe OTP likho.</p>
+  <button id="placeOrderBtn" class="btn btn-gold" style="width:100%" type="button" onclick="placeOrder()">✅ Place Order</button>
+  <div id="orderMsg" style="color:#C9A227;font-weight:700;margin-top:10px;line-height:1.5"></div>
+</aside>
+
+<aside class="drawer" id="quickDrawer" aria-label="Product Quick View">
+  <button class="closeX" type="button" onclick="closeQuick()">✕</button>
+  <div id="quickContent" style="margin-top:16px"></div>
+  <button class="btn btn-teal" style="width:100%" type="button" onclick="closeQuick()">Close</button>
+</aside>
+
+<div class="aiBox" id="aiBox">
+  <div class="aiHead">✨ MIRHA AI Assistant <span style="float:right;cursor:pointer" onclick="toggleAI()">✕</span></div>
+  <div class="aiMsgs" id="aiMsgs"></div>
+  <div style="display:flex;gap:6px;padding:10px">
+    <input id="aiInput" placeholder="Price? Delivery?..." maxlength="200" onkeydown="if(event.key==='Enter')sendAI()">
+    <button class="btn btn-gold" type="button" onclick="sendAI()">Send</button>
+  </div>
+  <p style="font-size:11px;padding:0 10px 10px;margin:0;color:#aaa">🔒 AI ko kabhi Password / OTP / Card mat batao</p>
+</div>
+
+<a class="fab fab-wa" id="waFab" href="https://wa.me/923427349881" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+<button class="fab fab-ai" type="button" onclick="toggleAI()" aria-label="MIRHA AI Assistant">✨</button>
+
+<footer>
+  <div id="footerContent">MIRHA COLLECTION - Risalpur, Nowshera, KPK</div>
+  <br>
+  <a href="customer.html">My Account & Track Order</a> · <a href="/team-secure">Team Login</a>
+</footer>
+
+<script src="supabase-config.js"></script>
+<script src="shared.js"></script>
+<script>
+let supabaseClient = null;
+let allProducts = [];
+let allCats = [];
+let allTags = [];
+let settings = {};
+let currentCat = 'All';
+let wishlist = sharedSafeJSON('mirhaWish', []);
+let cart = sharedSafeJSON('mirhaCart', []);
+let verifiedSessionPhone = '';
+let aiCount = 0;
+let aiTime = Date.now();
+
+function supabaseInit() {
+  try { supabaseClient = sharedSupabase(); } catch (e) { console.warn(e.message); }
+}
+
+async function initSessionCheckoutPrefill() {
+  const prof = sharedSafeJSON('mirhaProfile', {});
+  if (prof.name && !document.getElementById('cName').value) document.getElementById('cName').value = prof.name;
+  if (prof.address && !document.getElementById('cAddr').value) document.getElementById('cAddr').value = prof.address;
+  if (prof.phone && !document.getElementById('cPhone').value) document.getElementById('cPhone').value = prof.phone;
+
+  const addrs = sharedSafeJSON('mirhaAddrs', []);
+  const addrSel = document.getElementById('savedAddrSel');
+  if (addrs.length) {
+    addrSel.style.display = 'block';
+    addrSel.innerHTML = '<option value="">Saved Address choose karein...</option>' +
+      addrs.map((a, i) => `<option value="${i}">${sharedEsc(a.label)}: ${sharedEsc(a.text)}</option>`).join('');
+  }
+
+  if (supabaseClient) {
+    try {
+      const { data } = await supabaseClient.auth.getSession();
+      if (data?.session?.user?.phone) {
+        verifiedSessionPhone = sharedNormalizePhone(data.session.user.phone);
+        if (!document.getElementById('cPhone').value) {
+          document.getElementById('cPhone').value = verifiedSessionPhone;
+        }
+      }
+    } catch (e) {}
+  }
+  syncOtpVisibility();
+}
+
+function applySavedAddress() {
+  const idx = document.getElementById('savedAddrSel').value;
+  if (idx === '') return;
+  const addrs = sharedSafeJSON('mirhaAddrs', []);
+  if (addrs[Number(idx)]) document.getElementById('cAddr').value = addrs[Number(idx)].text || '';
+}
+
+function syncOtpVisibility() {
+  const entered = sharedNormalizePhone(document.getElementById('cPhone').value);
+  const matched = Boolean(verifiedSessionPhone && entered === verifiedSessionPhone);
+  document.getElementById('otpRow').style.display = matched ? 'none' : 'block';
+  const badge = document.getElementById('verifiedBadge');
+  badge.style.display = matched ? 'block' : 'none';
+  if (matched) badge.textContent = '✅ Phone verified (' + verifiedSessionPhone + ') — OTP zaroori nahi';
+}
+
+async function loadSettings() {
+  try {
+    if (supabaseClient) {
+      const { data } = await supabaseClient.from('settings').select('key,value');
+      if (data) data.forEach(r => { settings[r.key] = r.value; });
+    }
+  } catch (e) {}
+
+  if (!settings.store) settings.store = { name: 'MIRHA COLLECTION', city: 'Risalpur' };
+  if (!settings.topbar) settings.topbar = { text: '🔥 New Products | FREE Delivery Rs.3000+ pe | COD Available' };
+  if (!settings.hero) settings.hero = { title: 'Premium Suits, Best Selling + New Arrival.', sub: 'Ladies • Gents • Kids • Sale • Winter - COD Available' };
+  if (!settings.delivery) settings.delivery = { free_above: 3000, charge: 200 };
+  if (!settings.payments) settings.payments = [{ name: 'COD', enabled: true, tid_required: false }, { name: 'JazzCash', enabled: true, tid_required: true }, { name: 'EasyPaisa', enabled: true, tid_required: true }];
+  if (!settings.whatsapp) settings.whatsapp = { num: '03427349881', msg: 'Salam Mirha Collection!' };
+  if (!settings.footer) settings.footer = { text: 'MIRHA COLLECTION - Risalpur, Nowshera, KPK' };
+
+  renderStoreFromSettings();
+}
+
+function renderStoreFromSettings() {
+  document.getElementById('topbar').textContent = settings.topbar.text || 'MIRHA COLLECTION';
+  document.getElementById('heroTitle').textContent = settings.hero.title || 'Premium Suits';
+  document.getElementById('heroSub').textContent = settings.hero.sub || '';
+  document.getElementById('footerContent').textContent = settings.footer.text || '';
+
+  if (settings.seo?.title) document.title = settings.seo.title;
+  if (settings.seo?.desc) document.getElementById('seoDesc').setAttribute('content', settings.seo.desc);
+
+  const ann = document.getElementById('announcementBar');
+  if (settings.announcement?.enabled && settings.announcement?.text) {
+    ann.style.display = 'block';
+    ann.textContent = settings.announcement.text;
+    if (settings.announcement.bg) ann.style.background = settings.announcement.bg;
+  } else {
+    ann.style.display = 'none';
+  }
+
+  const wa = settings.whatsapp.num || '03427349881';
+  document.getElementById('waFab').href = sharedWaLink(wa, settings.whatsapp.msg);
+
+  const paySel = document.getElementById('paySel');
+  paySel.innerHTML = settings.payments
+    .filter(p => p.enabled)
+    .map(p => `<option value="${sharedEsc(p.name)}">${sharedEsc(p.name)}</option>`)
+    .join('');
+
+  payChange();
+  updateCartUI();
+}
+
+function payChange() {
+  const pay = document.getElementById('paySel').value;
+  const cfg = (settings.payments || []).find(p => p.name === pay);
+  document.getElementById('tidInput').style.display = (cfg && cfg.tid_required) ? 'block' : 'none';
+}
+
+async function loadProducts() {
+  try {
+    if (supabaseClient) {
+      const [{ data: prods }, { data: cats }, { data: tags }] = await Promise.all([
+        supabaseClient.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false }),
+        supabaseClient.from('categories').select('*').eq('is_active', true).order('sort_order'),
+        supabaseClient.from('tags').select('*').eq('is_active', true)
+      ]);
+      if (prods) {
+        allProducts = prods.map(p => ({
+          id: p.id, name: p.name, cat: p.cat || 'Ladies', tag: p.tag || '',
+          price: p.price, old_price: p.old_price, stock: p.stock, rating: p.rating || '4.8', img: p.img
+        }));
+      }
+      if (cats && cats.length) allCats = cats;
+      if (tags && tags.length) allTags = tags;
+    }
+  } catch (e) { console.warn('Products load error:', e.message); }
+
+  if (!supabaseClient) {
+    allProducts = [];
+    sharedToast('Store backend configure nahi hai.');
+  }
+  if (!allCats.length) {
+    allCats = [{ name: 'Ladies', emoji: '👩' }, { name: 'Gents', emoji: '👨' }, { name: 'Kids', emoji: '🧒' }, { name: 'Sale', emoji: '🔥' }, { name: 'Winter', emoji: '🧥' }, { name: 'New Arrival', emoji: '✨' }];
+  }
+  if (!allTags.length) allTags = [{ name: 'Best Selling' }, { name: 'New' }];
+
+  renderCats();
+  renderTags();
+  render('All');
+}
+
+function renderCats() {
+  let html = `<button class="pill ${currentCat === 'All' ? 'active' : ''}" type="button" data-cat="All" onclick="render(this.dataset.cat)">All (${allProducts.length})</button>`;
+  allCats.forEach(c => {
+    const cnt = allProducts.filter(p => p.cat === c.name).length;
+    html += `<button class="pill ${currentCat === c.name ? 'active' : ''}" type="button" data-cat="${sharedEsc(c.name)}" onclick="render(this.dataset.cat)">${sharedEsc(c.emoji || '📦')} ${sharedEsc(c.name)} (${cnt})</button>`;
+  });
+  document.getElementById('catBar').innerHTML = html;
+}
+
+function renderTags() {
+  const sel = document.getElementById('tagSel');
+  sel.innerHTML = `<option value="">All Tags</option>` + allTags.map(t => `<option value="${sharedEsc(t.name)}">${sharedEsc(t.name)}</option>`).join('');
+}
+
+function getFiltered() {
+  const q = document.getElementById('searchBox').value.toLowerCase().trim();
+  const tag = document.getElementById('tagSel').value;
+  const sort = document.getElementById('sortSel').value;
+  const list = allProducts.filter(p => {
+    if (currentCat !== 'All' && p.cat !== currentCat) return false;
+    if (tag && p.tag !== tag) return false;
+    if (q && !p.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if (sort === 'low') list.sort((a, b) => a.price - b.price);
+  if (sort === 'high') list.sort((a, b) => b.price - a.price);
+  if (sort === 'best') list.sort((a, b) => (b.tag === 'Best Selling') - (a.tag === 'Best Selling'));
+  return list;
+}
+
+function render(cat) {
+  if (cat) currentCat = cat;
+  renderCats();
+  const list = getFiltered();
+  document.getElementById('countLine').textContent = `Showing ${list.length} | Category ${currentCat} | Wishlist ${wishlist.length} | Total Products ${allProducts.length}`;
+
+  if (!list.length) {
+    document.getElementById('grid').innerHTML = `<p style="padding:20px;grid-column:1/-1;color:#aaa">Koi product nahi mila.</p>`;
+    updateCartUI();
+    return;
+  }
+
+  document.getElementById('grid').innerHTML = list.map(p => {
+    const badge = p.tag === 'Best Selling'
+      ? `<span class="badge badge-best">BEST SELLER</span>`
+      : p.tag === 'New'
+      ? `<span class="badge badge-new">NEW</span>`
+      : '';
+    const wished = wishlist.includes(String(p.id)) ? '❤️' : '🤍';
+    const out = Number(p.stock) <= 0;
+    return `<div class="card">
+      <img src="${sharedEsc(p.img || 'https://via.placeholder.com/600x400?text=MIRHA')}" alt="${sharedEsc(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=MIRHA'">
+      <div class="card-body">
+        <div>${badge} <button type="button" style="float:right;background:none;border:none;font-size:18px" data-id="${sharedEsc(p.id)}" onclick="toggleWish(this.dataset.id)" aria-label="Wishlist">${wished}</button></div>
+        <div style="font-weight:700;margin-top:6px">${sharedEsc(p.name)}</div>
+        <div style="font-size:12px;color:#aaa;margin:4px 0">⭐ ${sharedEsc(p.rating)} | ${sharedEsc(p.cat)}${p.tag ? ' | ' + sharedEsc(p.tag) : ''}</div>
+        <div><span class="price">${sharedFormatPrice(p.price)}</span>${p.old_price ? `<span class="old">${sharedFormatPrice(p.old_price)}</span>` : ''}</div>
+        <div style="font-size:12px;color:${out ? '#FF3B3B' : '#25D366'};margin:4px 0 8px">${out ? 'Out of Stock' : 'Stock: ' + Number(p.stock) + ' Available'}</div>
+        <div style="margin-top:auto">
+          <button class="btn btn-gold" style="width:100%" type="button" data-id="${sharedEsc(p.id)}" ${out ? 'disabled' : ''} onclick="add(this.dataset.id)">${out ? 'Out of Stock' : 'Add to Cart'}</button>
+          <button class="btn btn-teal" style="width:100%;margin-top:6px;background:#222;border:1px solid #0E7C7B;color:#0E7C7B" type="button" data-id="${sharedEsc(p.id)}" onclick="quick(this.dataset.id)">Quick View</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateCartUI();
+}
+
+function filterTag(t) { document.getElementById('tagSel').value = t; render(currentCat); }
+
+function toggleWish(id) {
+  id = String(id);
+  const i = wishlist.indexOf(id);
+  if (i >= 0) wishlist.splice(i, 1); else wishlist.push(id);
+  localStorage.setItem('mirhaWish', JSON.stringify(wishlist));
+  render(currentCat);
+  sharedToast('Wishlist Updated');
+}
+
+function add(id) {
+  const p = allProducts.find(x => String(x.id) === String(id));
+  if (!p || Number(p.stock) <= 0) { sharedToast('Stock khatam hai'); return; }
+  const ex = cart.find(c => String(c.id) === String(id));
+  const nextQty = (ex ? Number(ex.qty) : 0) + 1;
+  if (nextQty > Math.min(10, Number(p.stock))) { sharedToast('Max available stock limit reach ho gaya'); return; }
+  if (ex) ex.qty = nextQty; else cart.push({ id: String(id), qty: 1 });
+  localStorage.setItem('mirhaCart', JSON.stringify(cart));
+  updateCartUI();
+  sharedToast('✅ Cart me add ho gaya');
+}
+
+function updateCartUI() {
+  let validQty = 0;
+  let itemsHtml = '';
+  let subtotal = 0;
+
+  cart.forEach(c => {
+    const p = allProducts.find(x => String(x.id) === String(c.id));
+    if (!p) return;
+    const qty = Math.max(1, Math.min(10, Number(c.qty || 1)));
+    validQty += qty;
+    const line = Number(p.price) * qty;
+    subtotal += line;
+    itemsHtml += `<div style="display:flex;gap:8px;background:#222;padding:8px;border-radius:12px;margin:6px 0">
+      <img src="${sharedEsc(p.img || 'https://via.placeholder.com/120?text=MIRHA')}" style="width:60px;height:60px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">
+      <div style="flex:1">
+        <b>${sharedEsc(p.name)}</b><br>
+        ${sharedFormatPrice(p.price)} x ${qty} = ${sharedFormatPrice(line)}<br>
+        <div style="margin-top:4px;display:flex;gap:6px;align-items:center">
+          <button type="button" class="btn-grey" style="padding:2px 9px;border-radius:8px" data-id="${sharedEsc(p.id)}" onclick="chgQty(this.dataset.id,-1)">-</button>
+          <span>${qty}</span>
+          <button type="button" class="btn-grey" style="padding:2px 9px;border-radius:8px" data-id="${sharedEsc(p.id)}" onclick="chgQty(this.dataset.id,1)">+</button>
+          <button type="button" class="btn-grey" style="padding:2px 8px;border-radius:8px;margin-left:auto" data-id="${sharedEsc(p.id)}" onclick="remCart(this.dataset.id)">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('cartCount').textContent = allProducts.length ? validQty : cart.reduce((s, c) => s + Number(c.qty || 0), 0);
+  document.getElementById('cartItems').innerHTML = itemsHtml || '<p style="color:#aaa">Cart khali hai</p>';
+
+  if (subtotal > 0) {
+    const freeAbove = Number(settings.delivery?.free_above ?? 3000);
+    const charge = Number(settings.delivery?.charge ?? 200);
+    const fee = subtotal >= freeAbove ? 0 : charge;
+    const grand = subtotal + fee;
+    document.getElementById('cartTotal').innerHTML =
+      `Subtotal: ${sharedFormatPrice(subtotal)}<br>` +
+      `Delivery: ${fee === 0 ? '<span style="color:#25D366">FREE</span>' : sharedFormatPrice(fee)}<br>` +
+      `Grand Total: <span style="color:#C9A227">${sharedFormatPrice(grand)}</span>`;
+  } else {
+    document.getElementById('cartTotal').textContent = '';
+  }
+}
+
+function chgQty(id, d) {
+  const it = cart.find(c => String(c.id) === String(id));
+  if (!it) return;
+  const p = allProducts.find(x => String(x.id) === String(id));
+  const maxQ = p ? Math.min(10, Number(p.stock)) : 10;
+  it.qty = Number(it.qty) + d;
+  if (it.qty > maxQ) { it.qty = maxQ; sharedToast('Max stock/limit reach ho gaya'); }
+  if (it.qty <= 0) cart = cart.filter(c => String(c.id) !== String(id));
+  localStorage.setItem('mirhaCart', JSON.stringify(cart));
+  updateCartUI();
+}
+
+function remCart(id) {
+  cart = cart.filter(c => String(c.id) !== String(id));
+  localStorage.setItem('mirhaCart', JSON.stringify(cart));
+  updateCartUI();
+}
+
+function toggleCart() {
+  document.getElementById('cartDrawer').classList.toggle('open');
+  updateCartUI();
+  syncOtpVisibility();
+}
+
+function quick(id) {
+  const p = allProducts.find(x => String(x.id) === String(id));
+  if (!p) return;
+  const out = Number(p.stock) <= 0;
+  document.getElementById('quickContent').innerHTML =
+    `<img src="${sharedEsc(p.img || 'https://via.placeholder.com/600x400?text=MIRHA')}" style="width:100%;border-radius:12px" onerror="this.src='https://via.placeholder.com/600x400?text=MIRHA'">` +
+    `<h3>${sharedEsc(p.name)}</h3>` +
+    `<p style="color:#aaa">Category: ${sharedEsc(p.cat)}${p.tag ? ' | Tag: ' + sharedEsc(p.tag) : ''}</p>` +
+    `<p><span class="price">${sharedFormatPrice(p.price)}</span>${p.old_price ? `<span class="old">${sharedFormatPrice(p.old_price)}</span>` : ''}</p>` +
+    `<p style="color:${out ? '#FF3B3B' : '#25D366'}">${out ? 'Out of Stock' : 'Stock: ' + Number(p.stock) + ' Available'}</p>` +
+    `<button class="btn btn-gold" style="width:100%;margin-bottom:8px" type="button" data-id="${sharedEsc(p.id)}" ${out ? 'disabled' : ''} onclick="add(this.dataset.id);closeQuick()">${out ? 'Out of Stock' : 'Add to Cart'}</button>`;
+  document.getElementById('quickDrawer').classList.add('open');
+}
+
+function closeQuick() { document.getElementById('quickDrawer').classList.remove('open'); }
+
+async function sendOTP() {
+  try {
+    const phone = sharedNormalizePhone(document.getElementById('cPhone').value);
+    if (!sharedIsValidPhone(phone)) throw new Error('Phone sahi likho - 03xxxxxxxxx');
+    if (!supabaseClient) throw new Error('Store authentication is not configured.');
+    const { error } = await supabaseClient.auth.signInWithOtp({ phone: sharedToE164(phone), options: { channel: 'sms' } });
+    if (error) throw error;
+    sharedToast('OTP SMS bhej diya gaya.');
+  } catch (e) {
+    alert(e.message || 'OTP send nahi ho saka');
+  }
+}
+
+async function placeOrder() {
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true;
+  try {
+    if (!supabaseClient) throw new Error('Supabase is not configured.');
+
+    const name = sharedClean(document.getElementById('cName').value, 40);
+    const phone = sharedNormalizePhone(document.getElementById('cPhone').value);
+    const addr = sharedClean(document.getElementById('cAddr').value, 120);
+    const pay = document.getElementById('paySel').value;
+    const tid = document.getElementById('tidInput').value.trim();
+    const otp = document.getElementById('otpInput').value.trim();
+
+    if (name.length < 3 || !phone || addr.length < 10) {
+      throw new Error('Naam (min 3 chars), Phone aur Full Address (min 10 chars) likhein');
+    }
+    if (!sharedIsValidPhone(phone)) throw new Error('Phone galat hai (03xxxxxxxxx)');
+
+    const items = cart
+      .filter(c => allProducts.some(p => String(p.id) === String(c.id)))
+      .map(c => ({ id: Number(c.id), qty: Number(c.qty) }))
+      .filter(c => Number.isInteger(c.id) && c.id > 0 && Number.isInteger(c.qty) && c.qty > 0);
+    if (!items.length) throw new Error('Cart khali hai');
+
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    const currentAuthPhone = sessionData?.session?.user?.phone ? sharedNormalizePhone(sessionData.session.user.phone) : '';
+
+    if (!sessionData?.session || currentAuthPhone !== phone) {
+      if (!/^\d{6}$/.test(otp)) throw new Error('6 digit OTP likhein (pehle OTP Bhejo dabayein)');
+      const { data: verified, error: otpError } = await supabaseClient.auth.verifyOtp({
+        phone: sharedToE164(phone), token: otp, type: 'sms'
+      });
+      if (otpError) throw otpError;
+      if (!verified.session) throw new Error('OTP verification failed.');
+      verifiedSessionPhone = phone;
+      syncOtpVisibility();
+    }
+
+    const cfg = (settings.payments || []).find(p => p.name === pay);
+    if (cfg && cfg.tid_required && (tid.length < 6 || tid.length > 30)) {
+      throw new Error('Valid TID (6-30 characters) likho');
+    }
+
+    const { data, error } = await supabaseClient.rpc('create_order', {
+      p_items: items, p_customer: name, p_phone: phone, p_address: addr, p_pay: pay, p_tid: tid || null
+    });
+    if (error) throw error;
+
+    const order = Array.isArray(data) ? data[0] : data;
+    if (!order || !order.order_code) throw new Error('Order response invalid');
+
+    const waUrl = sharedWaLink(settings.whatsapp.num, `Salam Mirha Collection! Order ${order.order_code} - Total ${sharedFormatPrice(order.total)}`);
+    document.getElementById('orderMsg').innerHTML =
+      `✅ Order <b>${sharedEsc(order.order_code)}</b> ban gaya! Total ${sharedFormatPrice(order.total)}.<br>` +
+      `<small>Order ID save kar lein.</small><br>` +
+      `<a class="btn btn-teal" style="margin-top:8px" href="${sharedEsc(waUrl)}" target="_blank" rel="noopener">💬 WhatsApp pe Confirm Karein</a>`;
+
+    window.open(waUrl, '_blank', 'noopener');
+    cart = [];
+    localStorage.setItem('mirhaCart', JSON.stringify(cart));
+    document.getElementById('tidInput').value = '';
+    document.getElementById('otpInput').value = '';
+    loadProducts();
+  } catch (e) {
+    alert(e.message || 'Order place nahi ho saka');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function toggleAI() {
+  const box = document.getElementById('aiBox');
+  box.classList.toggle('open');
+  if (box.classList.contains('open') && !document.getElementById('aiMsgs').innerHTML) {
+    const best = allProducts.filter(p => p.tag === 'Best Selling').length;
+    const nw = allProducts.filter(p => p.tag === 'New').length;
+    document.getElementById('aiMsgs').innerHTML =
+      `<div class="msg">Salam! Hamare paas ${allProducts.length} products hain - ${best} Best Selling + ${nw} New. Aapko kya chahiye? Price, Delivery, Order?</div>`;
+  }
+}
+
+function sendAI() {
+  const inp = document.getElementById('aiInput');
+  const q = sharedClean(inp.value, 200).toLowerCase();
+  if (!q) return;
+  if (Date.now() - aiTime > 60000) { aiCount = 0; aiTime = Date.now(); }
+  aiCount++;
+  if (aiCount > 10) { alert('Bohat zyada message - 1 min ruk jao'); return; }
+
+  const blocked = [
+    'password', 'admin123', 'supplier cost', 'cost price', 'secret', 'system prompt',
+    'ignore previous', 'jailbreak', 'api key', 'token', 'env', 'database', 'supplier phone',
+    'bank', 'cnic', 'ignore instructions', 'supabase', 'service_role', 'anon key', 'jwt',
+    'rls', 'service key', 'postgres', 'sql', 'select *', 'drop table', 'delete from'
+  ];
+  const msgs = document.getElementById('aiMsgs');
+  msgs.innerHTML += `<div class="msg" style="background:#0E7C7B">${sharedEsc(inp.value)}</div>`;
+
+  let reply = '';
+  if (blocked.some(b => q.includes(b))) {
+    reply = 'Maaf kijiye, ye information main share nahi kar sakta. Aap product, price, delivery ya order ke bare me pooch sakte hain.';
+  } else if (q.includes('best')) {
+    reply = 'Top Best Selling: ' + (allProducts.filter(p => p.tag === 'Best Selling').slice(0, 5).map(p => p.name + ' - ' + sharedFormatPrice(p.price)).join(', ') || 'Abhi load ho rahe hain');
+  } else if (q.includes('new')) {
+    reply = 'Top New: ' + (allProducts.filter(p => p.tag === 'New').slice(0, 5).map(p => p.name).join(', ') || 'Abhi load ho rahe hain');
+  } else if (q.includes('price') || q.includes('rate')) {
+    if (!allProducts.length) reply = 'Products load ho rahe hain, thori dair me poochein.';
+    else reply = `Price Range ${sharedFormatPrice(Math.min(...allProducts.map(p => p.price)))} se ${sharedFormatPrice(Math.max(...allProducts.map(p => p.price)))} tak hai.`;
+  } else if (q.includes('deliver') || q.includes('kab')) {
+    reply = `Delivery: Risalpur 1-2 din, Baaki 2-3 din. FREE Delivery Rs.${settings.delivery.free_above}+ pe (baaki Rs.${settings.delivery.charge}).`;
+  } else if (q.includes('order') || q.includes('buy') || q.includes('track')) {
+    reply = 'Order track karne ke liye: My Account > Track Order > MIRHA-XXXXXX likho ya WhatsApp karo.';
+  } else if (q.includes('payment') || q.includes('jazzcash') || q.includes('easypaisa')) {
+    reply = 'Payments: ' + settings.payments.filter(p => p.enabled).map(p => p.name).join(', ');
+  } else if (q.includes('ladies') || q.includes('gents') || q.includes('kids') || q.includes('sale') || q.includes('winter')) {
+    const cat = q.includes('ladies') ? 'Ladies' : q.includes('gents') ? 'Gents' : q.includes('kids') ? 'Kids' : q.includes('sale') ? 'Sale' : 'Winter';
+    const list = allProducts.filter(p => p.cat === cat);
+    reply = `${cat} me ${list.length} products hain. Top: ` + (list.slice(0, 3).map(p => p.name).join(', ') || 'None');
+  } else if (q.includes('salam') || q.includes('hello') || q.includes('hi')) {
+    reply = `Salam! Hamare paas ${allProducts.length} products hain. Aapko kya chahiye?`;
+  } else {
+    reply = 'Aap ye pooch sakte hain: 1) Best Selling kya hai? 2) Price kya hai? 3) Delivery kab hogi? 4) Order kaise karu? 5) Payment kaise karu?';
+  }
+
+  msgs.innerHTML += `<div class="msg">${sharedEsc(reply)}</div>`;
+  inp.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('cartDrawer').classList.remove('open');
+    closeQuick();
+  }
+});
+
+supabaseInit();
+loadSettings();
+loadProducts();
+initSessionCheckoutPrefill();
+</script>
+</body>
+</html>
