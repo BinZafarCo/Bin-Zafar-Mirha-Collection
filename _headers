@@ -1,0 +1,21 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/admin
+  X-Robots-Tag: noindex, nofollow
+
+/admin.html
+  X-Robots-Tag: noindex, nofollow
+
+/team-secure
+  X-Robots-Tag: noindex, nofollow
+
+/customer
+  X-Robots-Tag: noindex, nofollow
+
+/customer.html
+  X-Robots-Tag: noindex, nofollow
+```
+
+---
