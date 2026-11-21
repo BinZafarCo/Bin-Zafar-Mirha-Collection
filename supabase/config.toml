@@ -1,0 +1,4 @@
+project_id = "mirha-collection"
+
+[functions.admin-suppliers]
+verify_jwt = false
